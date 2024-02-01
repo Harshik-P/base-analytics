@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useState } from "react";
+import { getSession, useSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
 
 import Sidebar from "@/components/Sidebar";
 import DashboardContainer from "@/components/DashboardContainer";
+import { AppRoutes } from "@/utils/routes";
 
 export default function Dashboard() {
   const [showDrawer, setShowDrawer] = useState(false);
-  const router = useRouter();
   const { data: sessionUser } = useSession();
-
-  useEffect(() => {
-    if (!sessionUser) {
-      router.replace("/");
-    }
-  }, [sessionUser, router]);
 
   return (
     <div className="flex relative w-full">
@@ -32,3 +26,20 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      props: {},
+      redirect: {
+        destination: AppRoutes.login,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

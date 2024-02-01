@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { getSession, signIn } from "next-auth/react";
+import { GetServerSideProps } from "next";
 
 import leftlayout from "../public/assets/left-layout.png";
 import GitHub from "../public/assets/Github.svg";
@@ -15,16 +15,11 @@ import GitHubGray from "../public/assets/GitHub-Grey.svg";
 import TwitterGray from "../public/assets/Twitter-Gray.svg";
 import LinkedInGray from "../public/assets/LinkedIn-Gray.svg";
 import DiscordGray from "../public/assets/Discord-Gray.svg";
+import { AppRoutes } from "@/utils/routes";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
-  const { data: sessionUser } = useSession();
-
-  if (sessionUser) {
-    router.replace("/dashboard");
-  }
 
   const handleLogin = () => {
     signIn("google");
@@ -143,3 +138,20 @@ export default function Home() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+
+  if (session) {
+    return {
+      props: {},
+      redirect: {
+        destination: AppRoutes.dashboard,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
