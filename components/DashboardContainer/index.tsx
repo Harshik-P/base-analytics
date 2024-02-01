@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { signOut } from "next-auth/react";
 
 import NotificationIcon from "../../public/assets/Notification-Navbar.svg";
 import ProfilePic from "../../public/assets/ProfilePic.svg";
@@ -15,9 +17,34 @@ export default function DashboardContainer({
   profilePicture,
   setShowDrawer,
 }: DashboardContainerProps) {
+  const [showLogout, setShowLogout] = useState(false);
+  const logoutRef = useRef<HTMLDivElement>(null);
+
   const handleToggleSidebar = () => {
     setShowDrawer(true);
   };
+
+  const handleLogout = () => {
+    setShowLogout(false);
+    signOut();
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        logoutRef.current &&
+        !logoutRef.current.contains(event.target as Node)
+      ) {
+        setShowLogout(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="w-full md:px-[30px] md:py-[30px] overflow-hidden">
@@ -43,13 +70,29 @@ export default function DashboardContainer({
             width={18}
             height={23}
           />
-          <Image
-            src={profilePicture ? profilePicture : ProfilePic}
-            alt="ProfilePic"
-            width={30}
-            height={30}
-            className="rounded-full"
-          />
+          <div className="relative">
+            <Image
+              src={profilePicture ? profilePicture : ProfilePic}
+              alt="ProfilePic"
+              width={30}
+              height={30}
+              className="rounded-full cursor-pointer"
+              onClick={() => setShowLogout(!showLogout)}
+            />
+            {showLogout ? (
+              <div
+                ref={logoutRef}
+                className="absolute top-10 right-0 z-10 rounded-lg px-2 py-1 bg-white flex justify-center items-center cursor-pointer"
+              >
+                <div
+                  className="hover:bg-[#F8FAFF] px-3 py-1.5 hover:rounded-lg"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
       <div className="text-[#030229] font-bold md:hidden mt-5 mx-10">

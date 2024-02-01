@@ -73,12 +73,12 @@ export default function Home() {
             Sign in to your account
           </div>
           <div className="flex items-center gap-8 my-5 md:my-7">
-            <div className="h-8 w-[45%] sm:w-44 md:w-40 lg:w-44 md:rounded-lg lg:rounded-xl bg-white flex justify-center items-center gap-3.5">
+            <div
+              className="h-8 w-[45%] sm:w-44 md:w-40 lg:w-44 md:rounded-lg lg:rounded-xl bg-white flex justify-center items-center gap-3.5 cursor-pointer"
+              onClick={handleLogin}
+            >
               <Image src={Google} alt="Google" width={15} height={15} />
-              <div
-                className="text-[#858585] text-[10px] cursor-pointer md:text-xs"
-                onClick={handleLogin}
-              >
+              <div className="text-[#858585] text-[10px] md:text-xs">
                 Sign in with Google
               </div>
             </div>
@@ -141,6 +141,7 @@ export default function Home() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
+  console.log(session, "check session");
 
   if (session) {
     return {
